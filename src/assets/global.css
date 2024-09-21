@@ -1,0 +1,8 @@
+:root {
+	background: #222;
+	color: #fee;
+}
+:root.light {
+	background: #fee;
+	color: #222;
+}
