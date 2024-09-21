@@ -1,8 +1,13 @@
 :root {
 	background: #222;
 	color: #fee;
+	--hl: #88f;
 }
 :root.light {
 	background: #fee;
 	color: #222;
+	--hl: #88f;
+}
+a {
+	color: var(--hl);
 }

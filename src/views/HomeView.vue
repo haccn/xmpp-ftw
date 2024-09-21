@@ -1,9 +1,5 @@
-<script setup lang="ts">
-	import HelloWorld from "../components/HelloWorld.vue"
-</script>
-
 <template>
 	<main>
-		<HelloWorld />
+		<h1> Home</h1>
 	</main>
 </template>
