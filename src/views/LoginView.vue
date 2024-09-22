@@ -1,6 +1,6 @@
 <script setup lang="ts">
-	import { stat } from 'fs';
-import { Strophe } from 'strophe.js';
+	import { Strophe } from "strophe.js";
+	import config from "@/config";
 
 	let jid = "example@hacc.party";
 	let password = "";
@@ -23,7 +23,7 @@ import { Strophe } from 'strophe.js';
 </script>
 
 <template>
-	<input type="text" :value="jid" @input="e => jid = e.target.value"/>
+	<input type="text" :value="jid" :placeholder="config.placeholder_jid" @input="e => jid = e.target.value"/>
 	<input type="password" :value="password" @input="e => password = e.target.value"/>
 	<button @click="connect">login</button>
 </template>
