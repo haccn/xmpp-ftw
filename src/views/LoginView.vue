@@ -25,8 +25,16 @@
 				switch (status) {
 					case Strophe.Status.CONNECTED:
 						console.log("Connected!");
-						localStorage.setItem("jid", jid);
-						localStorage.setItem("serpent", btoa(password));
+						if (connection.scram_keys !== null) {
+							localStorage.setItem("jid", jid);
+							localStorage.setItem("seed", btoa(JSON.stringify(connection.scram_keys)));
+						}
+						else {
+							console.error("Failed to save password. No secure mechanism available." +
+								"Please contact the server administrator and request that they add SCRAM support." +
+								"(in Prosody this can be done with mod_auth_internal_hashed)");
+						}
+
 						store.connections.set(jid, connection);
 						if (route.query.redirect)
 							router.push(route.query.redirect as string);
@@ -50,9 +58,9 @@
 		});
 	}
 
-	let storedPassword = localStorage.getItem("serpent");
+	let storedPassword = localStorage.getItem("seed");
 	if (storedPassword)
-		tryConnect(localStorage.getItem("jid"), atob(storedPassword));
+		tryConnect(localStorage.getItem("jid"), JSON.parse(atob(storedPassword)));
 
 	let jid = "a@hacc.party";
 	let password = "a";
