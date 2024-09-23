@@ -1,29 +1,67 @@
 <script setup lang="ts">
-	import { stat } from 'fs';
-import { Strophe } from 'strophe.js';
+	import { Strophe } from "strophe.js";
+	import router from "@/router";
+	import { useRoute } from "vue-router";
+	import { useMainStore } from "@/stores/main";
+	import config from "@/config";
 
-	let jid = "example@hacc.party";
-	let password = "";
+	const store = useMainStore();
+	const route = useRoute();
 
-	const connection = new Strophe.Connection("wss:hacc.party/xmpp-websocket");
+	function tryConnect(jid: string | null, password: string | null) {
+		return new Promise(resolve => {
+			if (!jid || !password) {
+				resolve(false);
+				return;
+			}
 
-	function connect() {
-		connection.connect(jid, password, onConnect);
+			if (store.connections.has(jid)) {
+				resolve(true);
+				return;
+			}
+
+			const connection = new Strophe.Connection(config.transport);
+			connection.connect(jid, password, (status: number, condition: string | null, _elem: any) => {
+				switch (status) {
+					case Strophe.Status.CONNECTED:
+						console.log("Connected!");
+						localStorage.setItem("jid", jid);
+						localStorage.setItem("serpent", btoa(password));
+						store.connections.set(jid, connection);
+						if (route.query.redirect)
+							router.push(route.query.redirect as string);
+						resolve(true);
+						return;
+
+					case Strophe.Status.ERROR:
+						console.error("Connection error: " + condition);
+						break;
+
+					case Strophe.Status.CONNTIMEOUT:
+						console.error("Connection timed out");
+						break;
+
+					case Strophe.Status.AUTHFAIL:
+						console.error("Authentication failed");
+						break;
+				}
+				resolve(false);
+			});
+		});
 	}
 
-	function onConnect(status: number, condition: string | null, elem: Element) {
-		if (status == Strophe.Status.CONNECTED)
-			console.log("connected!");
-		else if (status == Strophe.Status.ERROR)
-			console.log("connection error: " + condition);
-		else if (status == Strophe.Status.AUTHFAIL)
-			console.log("failed to authenticate");
-		console.log(elem);
-	}
+	let storedPassword = localStorage.getItem("serpent");
+	if (storedPassword)
+		tryConnect(localStorage.getItem("jid"), atob(storedPassword));
+
+	let jid = "a@hacc.party";
+	let password = "a";
 </script>
 
 <template>
-	<input type="text" :value="jid" @input="e => jid = e.target.value"/>
-	<input type="password" :value="password" @input="e => password = e.target.value"/>
-	<button @click="connect">login</button>
+	<form @submit="(e) => { e.preventDefault(); tryConnect(jid, password); }">
+		<input type="text" :placeholder="config.placeholder_jid" v-model="jid"/>
+		<input type="password" v-model="password"/>
+		<input type="submit" value="Login"/>
+	</form>
 </template>
