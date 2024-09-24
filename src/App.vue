@@ -1,21 +1,8 @@
 <script setup lang="ts">
-	import { RouterLink, RouterView } from "vue-router";
-	import ThemeToggle from "@/components/ThemeToggle.vue";
-	import { setIsLightTheme, getIsLightTheme } from "@/utils/theme";
-
-	setIsLightTheme(getIsLightTheme());
+	import { RouterView } from "vue-router";
 </script>
 
 <template>
-	<header>
-		<div class="wrapper">
-			<nav>
-				<RouterLink to="/">Home</RouterLink>
-				<ThemeToggle />
-			</nav>
-		</div>
-	</header>
-
 	<RouterView />
 </template>
 

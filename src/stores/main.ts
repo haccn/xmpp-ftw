@@ -1,8 +1,11 @@
-import type { Connection } from "node_modules/strophe.js/src/types/websocket";
+import config from "@/config";
+import type { Contact } from "@/utils/types";
 import { defineStore } from "pinia";
+import { Strophe } from "strophe.js";
 
 export const useMainStore = defineStore("main", {
 	state: () => ({
-		connections: new Map<string, Connection>(),
+		connection: new Strophe.Connection(config.transport),
+		contacts: [] as Contact[],
 	}),
 })

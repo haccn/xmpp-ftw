@@ -23,7 +23,7 @@ const router = createRouter({
 
 router.beforeEach((to, _from) => {
 	const store = useMainStore();
-	if (to.meta?.requiresAuth && store.connections.size === 0) {
+	if (to.meta?.requiresAuth && store.connection.authenticated == false) {
 		return {
 			name: "login",
 			query: { redirect: to.fullPath }

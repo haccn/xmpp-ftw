@@ -12,7 +12,9 @@
 
 <template>
 	<input
+		id="c"
 		type="checkbox"
 		:checked="isLightMode"
 		@change="setTheme"/>
+	<label for="c">light theme</label>
 </template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import { Strophe } from "strophe.js";
+	import { $pres, Strophe } from "strophe.js";
 	import router from "@/router";
 	import { useRoute } from "vue-router";
 	import { useMainStore } from "@/stores/main";
@@ -15,16 +15,14 @@
 				return;
 			}
 
-			if (store.connections.has(jid)) {
-				resolve(true);
-				return;
-			}
-
-			const connection = new Strophe.Connection(config.transport);
+			const connection = store.connection;
+			connection.rawInput = data => console.log('RECV: ' + data);
+			connection.rawOutput = data => console.log('SENT: ' + data);
 			connection.connect(jid, password, (status: number, condition: string | null, _elem: any) => {
 				switch (status) {
 					case Strophe.Status.CONNECTED:
 						console.log("Connected!");
+						//connection.send($pres());
 						if (connection.scram_keys !== null) {
 							localStorage.setItem("jid", jid);
 							localStorage.setItem("seed", btoa(JSON.stringify(connection.scram_keys)));
@@ -34,8 +32,6 @@
 								"Please contact the server administrator and request that they add SCRAM support." +
 								"(in Prosody this can be done with mod_auth_internal_hashed)");
 						}
-
-						store.connections.set(jid, connection);
 						if (route.query.redirect)
 							router.push(route.query.redirect as string);
 						resolve(true);
