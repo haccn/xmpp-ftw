@@ -58,8 +58,8 @@
   if (storedPassword)
     tryConnect(localStorage.getItem('jid'), JSON.parse(atob(storedPassword)))
 
-  let jid = 'a@hacc.party'
-  let password = 'a'
+  let jid = ''
+  let password = ''
 </script>
 
 <template>
