@@ -1,10 +1,9 @@
 <script setup lang='ts'>
   import ThemeToggle from '@/components/ThemeToggle.vue'
   import router from '@/router'
-  import { useMainStore } from '@/stores/main'
+  import { store } from '@/stores/main'
   import { rosterGet, rosterSet } from '@/utils/roster'
 
-  const store = useMainStore()
   const connection = store.connection
 
   function logout() {

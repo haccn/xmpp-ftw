@@ -2,11 +2,10 @@
   import { $pres, Strophe } from 'strophe.js'
   import router from '@/router'
   import { useRoute } from 'vue-router'
-  import { useMainStore } from '@/stores/main'
+  import { store } from '@/stores/main'
   import config from '@/config'
   import { rosterGet } from '@/utils/roster'
 
-  const store = useMainStore()
   const route = useRoute()
 
   function tryConnect(jid: string | null, password: string | null) {

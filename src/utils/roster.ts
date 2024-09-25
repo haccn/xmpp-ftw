@@ -1,6 +1,6 @@
-import { useMainStore } from '@/stores/main'
 import { $iq, Strophe } from 'strophe.js'
-import { $err } from './iq'
+import { $err } from '@/utils/iq'
+import { store } from '@/stores/main'
 
 // Expects an element collection like this:
 //
@@ -45,7 +45,6 @@ export type RosterItem = {
 // A "roster get" is a client's request for the server to return the
 // roster
 export function rosterGet() {
-  const store = useMainStore()
   const connection = store.connection
 
   connection.sendIQ(
@@ -70,7 +69,6 @@ export function rosterGet() {
 // A "roster set" is a client's request for the server to modify (i.e.,
 // create, update, or delete) a roster item
 export function rosterSet(rosterItem: RosterItem) {
-  const store = useMainStore()
   const connection = store.connection
 
   // Construct the stanza
