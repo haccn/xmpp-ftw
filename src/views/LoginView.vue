@@ -4,6 +4,7 @@
   import { useRoute } from 'vue-router'
   import { useMainStore } from '@/stores/main'
   import config from '@/config'
+  import { rosterGet } from '@/utils/roster'
 
   const store = useMainStore()
   const route = useRoute()
@@ -22,6 +23,7 @@
         switch (status) {
           case Strophe.Status.CONNECTED:
             console.log('Connected!')
+            rosterGet()
             //connection.send($pres())
             if (connection.scram_keys !== null) {
               localStorage.setItem('jid', jid)
