@@ -79,7 +79,7 @@ export function rosterSet(rosterItem: RosterItem) {
   if (rosterItem.name) item.name = rosterItem.name
   const iq = $iq({ type: 'set' })
     .c('query', { xmlns: Strophe.NS.ROSTER })
-      .c('item', item);
+    .c('item', item);
   for (const group of rosterItem.groups ?? [])
     iq.c('group').t(group).up();
 
@@ -90,7 +90,8 @@ export function rosterSet(rosterItem: RosterItem) {
   // that is sent from the server to the client
   connection.addHandler(
     (stanza: Element) => {
-      // Assert the stanza is from us or implicitly from us
+      // In accordance with the specification, we must
+      // assert that the stanza is from us or implicitly from us
       const from = stanza.getAttribute('from')
       if (from !== null && from !== connection.authzid) {
         const error = `Received alleged roster push from ${from}. Ignoring`
@@ -99,7 +100,8 @@ export function rosterSet(rosterItem: RosterItem) {
         return
       }
 
-      // Assert there is only one child
+      // In accordance with the specification, the
+      // query element must only contain one item
       if (stanza.children[0].children.length !== 1) {
         const error = `Server returned a roster push with ${stanza.children[0].children.length} items but only 1 is allowed. Ignoring`
         console.warn(error)
@@ -107,7 +109,7 @@ export function rosterSet(rosterItem: RosterItem) {
         return
       }
 
-      // If all is well then add it to our roster
+      // If all is well, then add the item to our roster
       const rosterItem = convertToRosterItems(stanza.children[0].children)[0]
       if (rosterItem.subscription == 'remove') store.roster.delete(rosterItem.jid)
       else store.roster.set(rosterItem.jid, rosterItem)
