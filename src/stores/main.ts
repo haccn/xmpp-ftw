@@ -1,8 +1,9 @@
-import type { Connection } from "node_modules/strophe.js/src/types/websocket";
-import { defineStore } from "pinia";
+import config from '@/config'
+import type { RosterItem } from '@/utils/roster'
+import { Strophe } from 'strophe.js'
+import { reactive } from 'vue'
 
-export const useMainStore = defineStore("main", {
-	state: () => ({
-		connections: new Map<string, Connection>(),
-	}),
+export const store = reactive({
+  connection: new Strophe.Connection(config.transport),
+  roster: new Map<string, RosterItem>,
 })
