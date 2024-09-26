@@ -10,22 +10,22 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
       meta: {
-        requiresAuth: true
-      }
+        requiresAuth: true,
+      },
     },
     {
       path: '/login',
       name: 'login',
-      component: () => import('@/views/LoginView.vue')
-    }
-  ]
+      component: () => import('@/views/LoginView.vue'),
+    },
+  ],
 })
 
 router.beforeEach((to, _from) => {
   if (to.meta?.requiresAuth && !store.connection.authenticated) {
     return {
       name: 'login',
-      query: { redirect: to.fullPath }
+      query: { redirect: to.fullPath },
     }
   }
 })

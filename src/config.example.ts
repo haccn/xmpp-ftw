@@ -1,4 +1,4 @@
 export default {
   transport: 'wss://example.com/xmpp-websocket',
-  placeholder_jid: 'billy@example.com'
+  placeholder_jid: 'billy@example.com',
 }
