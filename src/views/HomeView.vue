@@ -1,36 +1,47 @@
 <script setup lang='ts'>
-  import ThemeToggle from '@/components/ThemeToggle.vue'
-  import router from '@/router'
-  import { store } from '@/stores/main'
-  import { rosterGet, rosterSet } from '@/utils/roster'
+import ThemeToggle from '@/components/ThemeToggle.vue'
+import router from '@/router'
+import { store } from '@/stores/main'
+import { rosterGet, rosterSet } from '@/utils/roster'
 
-  const connection = store.connection
+const connection = store.connection
 
-  function logout() {
-    connection.disconnect()
-    localStorage.removeItem('jid')
-    localStorage.removeItem('seed')
-    router.push({ name: 'login', query: { redirect: '/' }})
-  }
+function logout() {
+  connection.disconnect()
+  localStorage.removeItem('jid')
+  localStorage.removeItem('seed')
+  router.push({ name: 'login', query: { redirect: '/' }})
+}
 
-  let addContactJid = '';
+let addContactJid = '';
 </script>
 
 <template>
   <aside>
     <ThemeToggle />
-    <button @click='logout'>Logout</button>
+    <button @click="logout">
+      Logout
+    </button>
     <hr>
     <h2>Contacts</h2>
-    <button @click='rosterGet'>Refresh</button>
+    <button @click="rosterGet">
+      Refresh
+    </button>
     <ul>
-      <li v-for='rosterItem in store.roster.values()'>
-        {{ rosterItem.jid }} <span style='opacity:0.5'>({{ rosterItem.subscription }})</span>
-        <button @click="() => { rosterItem.subscription = 'remove'; rosterSet(rosterItem) }">del</button>
+      <li v-for="rosterItem in store.roster.values()">
+        {{ rosterItem.jid }} <span style="opacity:0.5">({{ rosterItem.subscription }})</span>
+        <button @click="() => { rosterItem.subscription = 'remove'; rosterSet(rosterItem) }">
+          del
+        </button>
       </li>
     </ul>
-    <input type="text" v-model="addContactJid"/>
-    <button @click="() => rosterSet({ jid: addContactJid, subscription: 'none' })">+</button>
+    <input
+      v-model="addContactJid"
+      type="text"
+    >
+    <button @click="() => rosterSet({ jid: addContactJid, subscription: 'none' })">
+      +
+    </button>
     <!--
     <h2>Chats</h2>
     <ul>
