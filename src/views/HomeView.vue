@@ -2,18 +2,25 @@
   import ThemeToggle from '@/components/ThemeToggle.vue'
   import router from '@/router'
   import { store } from '@/stores/main'
-  import { rosterGet, rosterSet } from '@/utils/roster'
+  import { approveSubscriptionRequest, requestSubscription } from '@/utils/presence';
+  import { rosterGet, rosterSet, type RosterItem } from '@/utils/roster'
 
-  const connection = store.connection
+  let addContactJid = '';
+
+  // TODO: add UI for organizing groups and changing names
+  //rosterManager.rosterSet({ jid: addContactJid, name: '', groups: [] })
+
+  function removeContact(rosterItem: RosterItem) {
+    rosterItem.subscription = 'remove'
+    rosterSet(rosterItem)
+  }
 
   function logout() {
-    connection.disconnect()
+    store.connection.disconnect()
     localStorage.removeItem('jid')
     localStorage.removeItem('seed')
     router.push({ name: 'login', query: { redirect: '/' }})
   }
-
-  let addContactJid = '';
 </script>
 
 <template>
@@ -24,13 +31,17 @@
     <h2>Contacts</h2>
     <button @click='rosterGet'>Refresh</button>
     <ul>
+      <li v-for='subscriptionRequest in store.subscriptionRequests'>
+        ({{ subscriptionRequest }})
+        <button @click="() => approveSubscriptionRequest(subscriptionRequest)">apprv</button>
+      </li>
       <li v-for='rosterItem in store.roster.values()'>
-        {{ rosterItem.jid }} <span style='opacity:0.5'>({{ rosterItem.subscription }})</span>
-        <button @click="() => { rosterItem.subscription = 'remove'; rosterSet(rosterItem) }">del</button>
+        {{ rosterItem.jid }} <span style='opacity:0.5'>({{ rosterItem.ask ? 'pending' : rosterItem.subscription }})</span>
+        <button @click="() => removeContact(rosterItem)">del</button>
       </li>
     </ul>
     <input type="text" v-model="addContactJid"/>
-    <button @click="() => rosterSet({ jid: addContactJid, subscription: 'none' })">+</button>
+    <button @click="() => requestSubscription(addContactJid)">+</button>
     <!--
     <h2>Chats</h2>
     <ul>

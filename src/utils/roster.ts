@@ -1,6 +1,7 @@
 import { $iq, Strophe } from 'strophe.js'
 import { $err } from '@/utils/iq'
 import { store } from '@/stores/main'
+import { approveSubscriptionRequest } from './presence'
 
 // Expects an element collection like this:
 //
@@ -25,6 +26,8 @@ export function convertToRosterItems(items: HTMLCollection) {
     }
     const name = item.getAttribute('name')
     if (name) rosterItem.name = name
+    const ask = item.getAttribute('ask')
+    if (ask) rosterItem.ask = ask
 
     contacts.push(rosterItem)
   }
@@ -39,15 +42,14 @@ export type RosterItem = {
   name?: string;
   subscription: string;
   groups?: string[];
+  ask?: string;
 }
 
 // Section 2.1.3
 // A "roster get" is a client's request for the server to return the
 // roster
 export function rosterGet() {
-  const connection = store.connection
-
-  connection.sendIQ(
+  store.connection.sendIQ(
     $iq({ type: 'get' })
       .c('query', { xmlns: Strophe.NS.ROSTER }),
 
@@ -59,7 +61,7 @@ export function rosterGet() {
     },
 
     (stanza: Element | null) => {
-      if (stanza) console.error('Error retrieving roster: ' + stanza)
+      if (stanza) console.error('Error retrieving roster: ' + stanza.outerHTML)
       else console.error('Error retrieving roster')
     }
   )
@@ -83,47 +85,53 @@ export function rosterSet(rosterItem: RosterItem) {
   for (const group of rosterItem.groups ?? [])
     iq.c('group').t(group).up();
 
-  // Before we send it, we must register this handler
-  //
-  // Section 2.1.6 Roster Push
-  // A "roster push" is a newly created, updated, or deleted roster item
-  // that is sent from the server to the client
-  connection.addHandler(
-    (stanza: Element) => {
-      // Assert the stanza is from us or implicitly from us
-      const from = stanza.getAttribute('from')
-      if (from !== null && from !== connection.authzid) {
-        const error = `Received alleged roster push from ${from}. Ignoring`
-        console.warn(error)
-        connection.sendIQ($err(stanza.getAttribute('id') as string, error))
-        return
-      }
-
-      // Assert there is only one child
-      if (stanza.children[0].children.length !== 1) {
-        const error = `Server returned a roster push with ${stanza.children[0].children.length} items but only 1 is allowed. Ignoring`
-        console.warn(error)
-        connection.sendIQ($err(stanza.getAttribute('id') as string, error))
-        return
-      }
-
-      // If all is well then add it to our roster
-      const rosterItem = convertToRosterItems(stanza.children[0].children)[0]
-      if (rosterItem.subscription == 'remove') store.roster.delete(rosterItem.jid)
-      else store.roster.set(rosterItem.jid, rosterItem)
-    },
-    Strophe.NS.ROSTER,
-    'iq',
-    'set'
-  );
-
   // Send the stanza
   connection.sendIQ(
     iq,
     undefined,
     (stanza: Element | null) => {
-      if (stanza) console.error('Error adding roster item: ' + stanza)
+      if (stanza) console.error('Error adding roster item: ' + stanza.outerHTML)
       else console.error('Error adding roster item')
     }
   );
+}
+
+export function initRosterListener() {
+  // Section 2.1.6 Roster Push
+  // A "roster push" is a newly created, updated, or deleted roster item
+  // that is sent from the server to the client
+  store.connection.addHandler(
+    (stanza: Element) => {
+      try { onRosterSet(stanza) }
+      finally {
+        // Return true to indicate that this handler should remain active
+        return true
+      }
+    },
+    Strophe.NS.ROSTER, 'iq', 'set'
+  );
+
+  function onRosterSet(stanza: Element) {
+    // Assert the stanza is from us or implicitly from us
+    const from = stanza.getAttribute('from')
+    if (from !== null && from !== store.connection.authzid) {
+      const error = `Received alleged roster push from ${from}. Ignoring`
+      console.warn(error)
+      store.connection.sendIQ($err(stanza.getAttribute('id') as string, error))
+      return
+    }
+
+    // Assert there is only one child
+    if (stanza.children[0].children.length !== 1) {
+      const error = `Server returned a roster push with ${stanza.children[0].children.length} items but only 1 is allowed. Ignoring`
+      console.warn(error)
+      store.connection.sendIQ($err(stanza.getAttribute('id') as string, error))
+      return
+    }
+
+    // If all is well then add it to our roster
+    const rosterItem = convertToRosterItems(stanza.children[0].children)[0]
+    if (rosterItem.subscription === 'remove') store.roster.delete(rosterItem.jid)
+    else store.roster.set(rosterItem.jid, rosterItem)
+  }
 }

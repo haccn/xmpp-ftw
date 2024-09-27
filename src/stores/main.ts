@@ -6,4 +6,5 @@ import { reactive } from 'vue'
 export const store = reactive({
   connection: new Strophe.Connection(config.transport),
   roster: new Map<string, RosterItem>,
+  subscriptionRequests: new Array<string>()
 })
