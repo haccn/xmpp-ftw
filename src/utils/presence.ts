@@ -1,5 +1,6 @@
 import { store } from "@/stores/main";
-import { $pres } from "strophe.js";
+import { $pres, Strophe } from "strophe.js";
+import { getCombinedNodeFlags } from "typescript";
 
 // rfc6121
 // ---------------------
@@ -8,10 +9,10 @@ import { $pres } from "strophe.js";
 //
 // Section 3.1.1 Client Generation of Outbound Subscription Request
 export function requestSubscription(to: string) {
-  const existingRosterItem = store.roster.get(to)
+  const existingRosterItem = store.contacts.get(to)
   if (
     existingRosterItem &&
-    (existingRosterItem.subscription === 'to' || existingRosterItem.subscription === 'both')
+    (existingRosterItem.rosterItem.subscription === 'to' || existingRosterItem.rosterItem.subscription === 'both')
   ) {
     console.log(`You are already subscribed to ${to}`)
     return
@@ -60,13 +61,20 @@ export function approveSubscriptionRequest(from: string) {
 export function initPresenceListener() {
   store.connection.addHandler(
     (stanza: Element) => {
-      try { onPresenceSubscribe(stanza) }
+      try {
+        const type = stanza.getAttribute('type');
+        if (type === 'subscribe') onPresenceSubscribe(stanza)
+        else if (!type || type === 'unavailable') onPresence(stanza)
+      }
+      catch (ex: any) {
+        console.error(ex)
+      }
       finally {
         // Return true to indicate that this handler should remain active
         return true
       }
     },
-    null, 'presence', 'subscribe'
+    null, 'presence', null
   )
 
   function onPresenceSubscribe(stanza: Element) {
@@ -83,11 +91,30 @@ export function initPresenceListener() {
 
       // Auto approve mutual subscription requests.
       // The server is not allowed to do this for us.
-      if (store.roster.has(from)) {
+      if (store.contacts.has(from)) {
         approveSubscriptionRequest(from)
         return
       }
     }
+  }
+
+  function onPresence(stanza: Element) {
+    let from = stanza.getAttribute('from')
+    if (from?.includes('/') !== true) return
+    from = Strophe.getBareJidFromJid(from)
+    const contact = store.contacts.get(from)
+    if (!contact) return
+
+    const show = stanza.getElementsByTagName('show')[0]
+    const status = stanza.getElementsByTagName('status')[0]
+    console.warn(store.contacts)
+    contact.presence = {
+      type: stanza.getAttribute('type') ?? undefined,
+      show: show ? show.textContent as Show : undefined,
+      status: status ? status.textContent as string : undefined,
+    }
+    store.contacts.set(from, contact)
+    console.warn(store.contacts)
   }
 }
 
@@ -112,8 +139,8 @@ export function cancelSubscription(jid: string) {
 // i.e. remove your subscription to their presence
 
 export function unsubscribe(jid: string) {
-  const existingRosterItem = store.roster.get(jid)
-  if (existingRosterItem === undefined || existingRosterItem.subscription === 'none') {
+  const existingRosterItem = store.contacts.get(jid)
+  if (existingRosterItem === undefined || existingRosterItem.rosterItem.subscription === 'none') {
     console.log(`You don't have a subscription to ${jid}`)
     return
   }
@@ -137,13 +164,13 @@ export function unsubscribe(jid: string) {
 
 export enum Show {
   // Temporarily away
-  Away,
+  Away = 'away',
   // Interested in chatting
-  Chat,
+  Chat = 'chat',
   // Do not disturb
-  Dnd,
+  Dnd = 'dnd',
   // Extended away
-  Xa,
+  Xa = 'xa',
 }
 
 export type Presence = {

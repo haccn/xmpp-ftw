@@ -1,11 +1,12 @@
 <script setup lang='ts'>
   import { Show, type Presence } from '@/utils/presence'
+  import { rosterSet } from '@/utils/roster';
 
   const props = defineProps<{
     jid: string,
     name?: string,
-    presence?: Presence,
     subscription?: string,
+    presence?: Presence,
   }>()
 
   function getStatusCircleClass() {
@@ -21,14 +22,14 @@
   <div id='main'>
     <div id='pfp'>
       <img src='/default_pfp.webp'/>
-      <span id='statusCircle' v-bind:class='getStatusCircleClass()'></span>
+      <span v-if='props.presence' id='statusCircle' v-bind:class='getStatusCircleClass()'></span>
     </div>
     <div id='text'>
       <strong>{{ props.name ?? props.jid }}</strong>
       <small>{{ props.presence?.status }}</small>
       <small style='opacity: 0.5'>{{ props.subscription }}</small>
     </div>
-    <button>x</button>
+    <button @click="() => rosterSet({ jid: props.jid, subscription: 'remove' })">x</button>
   </div>
 </template>
 

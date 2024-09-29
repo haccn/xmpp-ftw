@@ -3,18 +3,13 @@
   import UserStrip from '@/components/UserStrip.vue';
   import router from '@/router'
   import { store } from '@/stores/main'
-  import { Show, approveSubscriptionRequest, cancelSubscription, requestSubscription } from '@/utils/presence';
-  import { rosterGet, rosterSet, type RosterItem } from '@/utils/roster'
+  import { approveSubscriptionRequest, cancelSubscription, requestSubscription } from '@/utils/presence';
+  import { rosterGet } from '@/utils/roster';
 
   let addContactJid = '';
 
   // TODO: add UI for organizing groups and changing names
   //rosterManager.rosterSet({ jid: addContactJid, name: '', groups: [] })
-
-  function removeContact(rosterItem: RosterItem) {
-    rosterItem.subscription = 'remove'
-    rosterSet(rosterItem)
-  }
 
   function logout() {
     store.connection.disconnect()
@@ -37,14 +32,13 @@
         <button @click="() => approveSubscriptionRequest(subscriptionRequest)">apprv</button>
         <button @click="() => cancelSubscription(subscriptionRequest)">rject</button>
       </li>
-      <li v-for='rosterItem in store.roster.values()'>
-        {{ rosterItem.jid }} <span style='opacity:0.5'>({{ rosterItem.ask ? 'pending' : rosterItem.subscription }})</span>
-        <button @click="() => removeContact(rosterItem)">del</button>
+      <li v-for='[jid, contact] in store.contacts'>
+        <UserStrip
+          :jid="jid"
+          :name="contact.rosterItem.name"
+          :subscription="contact.rosterItem.subscription"
+          :presence="contact.presence" />
       </li>
-      <li><UserStrip jid='test@test.com' :presence="{ show: Show.Dnd }"/></li>
-      <li><UserStrip jid='test2@example.com' :presence="{ show: Show.Away }"/></li>
-      <li><UserStrip jid='ya@boo' :presence="{ show: Show.Chat, status: 'beanzzz' }"/></li>
-      <li><UserStrip jid='away@chat.chat' :presence="{ show: Show.Xa }"/></li>
     </ul>
     <input type="text" v-model="addContactJid"/>
     <button @click="() => requestSubscription(addContactJid)">+</button>

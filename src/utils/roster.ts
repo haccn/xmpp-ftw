@@ -56,7 +56,7 @@ export function rosterGet() {
     (stanza: Element) => {
       const rosterItems = convertToRosterItems(stanza.children[0].children)
       for (const item of rosterItems) {
-        store.roster.set(item.jid, item)
+        store.contacts.set(item.jid, { rosterItem: item })
       }
     },
 
