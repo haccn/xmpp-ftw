@@ -1,7 +1,6 @@
 import { $iq, Strophe } from 'strophe.js'
 import { $err } from '@/utils/iq'
 import { store } from '@/stores/main'
-import { approveSubscriptionRequest } from './presence'
 
 // Expects an element collection like this:
 //
@@ -16,8 +15,9 @@ export function convertToRosterItems(items: HTMLCollection) {
   const contacts = [] as RosterItem[]
   for (const item of items) {
     const groups = [] as string[]
-    for (const group of item.children)
+    for (const group of item.children) {
       groups.push(group.textContent as string)
+    }
 
     const rosterItem: RosterItem = {
       jid: item.getAttribute('jid') as string,

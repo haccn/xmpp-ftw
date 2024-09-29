@@ -2,9 +2,9 @@ import '@/assets/global.css'
 import { createApp } from 'vue'
 import App from '@/App.vue'
 import router from '@/router'
-import { setIsLightTheme, getIsLightTheme } from '@/utils/theme'
+import { setIsDarkTheme, getIsDarkTheme } from '@/utils/theme'
 
-setIsLightTheme(getIsLightTheme())
+setIsDarkTheme(getIsDarkTheme())
 
 const app = createApp(App)
 

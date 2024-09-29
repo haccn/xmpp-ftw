@@ -92,7 +92,7 @@ export function initPresenceListener() {
 }
 
 // Section 3.2 Canceling a Subscription
-// i.e. remove their subscription to your presence
+// i.e. remove their subscription to your presence, or reject their request
 
 export function cancelSubscription(jid: string) {
   store.connection.sendPresence(
@@ -103,6 +103,9 @@ export function cancelSubscription(jid: string) {
       else console.error('Error canceling subscription')
     }
   )
+
+  store.subscriptionRequests = store.subscriptionRequests
+    .filter(subscriptionRequest => subscriptionRequest !== jid)
 }
 
 // Section 3.3 Unsubscribing
@@ -124,3 +127,29 @@ export function unsubscribe(jid: string) {
     }
   )
 }
+
+// Section 4.4.1 Client Generation of Subsequent Presence Broadcast
+// TODO presence broadcast (changing presence)
+
+// TODO directed presence for non-friend chat and MUC
+
+// Section 4.7 Presence Syntax
+
+export enum Show {
+  // Temporarily away
+  Away,
+  // Interested in chatting
+  Chat,
+  // Do not disturb
+  Dnd,
+  // Extended away
+  Xa,
+}
+
+export type Presence = {
+  type?: string;
+  show?: Show;
+  status?: string;
+}
+
+// TODO see section 4.7.3 for communication encryption info?

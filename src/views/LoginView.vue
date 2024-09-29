@@ -5,7 +5,7 @@
   import { store } from '@/stores/main'
   import config from '@/config'
   import { initRosterListener, rosterGet } from '@/utils/roster'
-import { initPresenceListener } from '@/utils/presence'
+  import { initPresenceListener } from '@/utils/presence'
 
   const route = useRoute()
 
@@ -66,9 +66,29 @@ import { initPresenceListener } from '@/utils/presence'
 </script>
 
 <template>
-  <form @submit='(e) => { e.preventDefault(); tryConnect(jid, password); }'>
-    <input type='text' :placeholder='config.placeholder_jid' v-model='jid'/>
-    <input type='password' v-model='password'/>
-    <input type='submit' value='Login'/>
-  </form>
+  <main>
+    <h1>{{ config.title }}</h1>
+    <form @submit='(e) => { e.preventDefault(); tryConnect(jid, password); }'>
+      <label>Username</label>
+      <input type='text' :placeholder='config.placeholderJid' v-model='jid'/>
+      <label>Password</label>
+      <input type='password' v-model='password'/>
+      <input type='submit' value='Login'/>
+    </form>
+  </main>
 </template>
+
+<style scoped>
+  main {
+    max-width: 15rem;
+    margin: auto;
+  }
+  input {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  input[type=submit] {
+    margin-top: 1rem;
+    display: block;
+  }
+</style>

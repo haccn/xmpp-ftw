@@ -1,8 +1,9 @@
 <script setup lang='ts'>
   import ThemeToggle from '@/components/ThemeToggle.vue'
+  import UserStrip from '@/components/UserStrip.vue';
   import router from '@/router'
   import { store } from '@/stores/main'
-  import { approveSubscriptionRequest, cancelSubscription, requestSubscription } from '@/utils/presence';
+  import { Show, approveSubscriptionRequest, cancelSubscription, requestSubscription } from '@/utils/presence';
   import { rosterGet, rosterSet, type RosterItem } from '@/utils/roster'
 
   let addContactJid = '';
@@ -40,6 +41,10 @@
         {{ rosterItem.jid }} <span style='opacity:0.5'>({{ rosterItem.ask ? 'pending' : rosterItem.subscription }})</span>
         <button @click="() => removeContact(rosterItem)">del</button>
       </li>
+      <li><UserStrip jid='test@test.com' :presence="{ show: Show.Dnd }"/></li>
+      <li><UserStrip jid='test2@example.com' :presence="{ show: Show.Away }"/></li>
+      <li><UserStrip jid='ya@boo' :presence="{ show: Show.Chat, status: 'beanzzz' }"/></li>
+      <li><UserStrip jid='away@chat.chat' :presence="{ show: Show.Xa }"/></li>
     </ul>
     <input type="text" v-model="addContactJid"/>
     <button @click="() => requestSubscription(addContactJid)">+</button>
@@ -55,12 +60,7 @@
   </main>
 </template>
 
-<style>
-body {
-  display: flex;
-  height: 100vh;
-  margin: 0;
-}
+<style scoped>
 ul {
   list-style: none;
   padding: 0;
@@ -70,12 +70,10 @@ li {
   padding: 0.3rem;
 }
 aside {
-  max-width: 10rem;
-  width: 100%;
-  background: #111;
-}
-aside * {
-  display: block;
+  width: 17rem;
+  background: var(--bg-2);
+  height: 100%;
+  position: fixed;
 }
 main {
   padding: 1rem;
