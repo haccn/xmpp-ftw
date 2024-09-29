@@ -1,27 +1,27 @@
 :root {
-  --fg: #222;
-  --bg-1: #fee;
-  --bg-2: #edd;
-  --hl: #88f;
+	--fg: #222;
+	--bg-1: #fee;
+	--bg-2: #edd;
+	--hl: #88f;
 
-  background: var(--bg-1);
-  color: var(--fg);
+	background: var(--bg-1);
+	color: var(--fg);
 }
 :root.dark {
-  --fg: #fee;
-  --bg-1: #222;
-  --bg-2: #111;
-  --hl: #88f;
+	--fg: #fee;
+	--bg-1: #222;
+	--bg-2: #111;
+	--hl: #88f;
 
-  background: var(--bg-1);
-  color: var(--fg);
+	background: var(--bg-1);
+	color: var(--fg);
 }
 
 body {
-  height: 100vh;
-  margin: 0;
+	height: 100vh;
+	margin: 0;
 }
 
 a {
-  color: var(--hl);
+	color: var(--hl);
 }

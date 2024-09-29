@@ -1,5 +1,5 @@
 export default {
-  transport: 'wss://example.com/xmpp-websocket',
-  title: 'xmpp-ftw',
-  placeholderJid: 'billy@example.com'
+	transport: 'wss://example.com/xmpp-websocket',
+	title: 'xmpp-ftw',
+	placeholderJid: 'billy@example.com'
 }

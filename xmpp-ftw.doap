@@ -1,36 +1,39 @@
 <!-- DOAP documentation: https://xmpp.org/extensions/xep-0453.html -->
 
 <?xml version='1.0' encoding='UTF-8'?>
-<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
-         xmlns='http://usefulinc.com/ns/doap#'
-         xmlns:xmpp='https://linkmauve.fr/ns/xmpp-doap#'
-         xmlns:schema='https://schema.org/'>
-  <Project>
-    <name>xmpp-ftw</name>
+<rdf:RDF
+	xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+		xmlns='http://usefulinc.com/ns/doap#'
+		xmlns:xmpp='https://linkmauve.fr/ns/xmpp-doap#'
+		xmlns:schema='https://schema.org/'>
+	<Project>
 
-    <os>Web</os>
+		<name>xmpp-ftw</name>
 
-    <created>2024-09-21</created>
+		<os>Web</os>
 
-    <shortdesc xml:lang='en'>Fully-featured XMPP web client</shortdesc>
+		<created>2024-09-21</created>
 
-    <description xml:lang='en'>A lightweight yet fully-featued XMPP web client written in VueJS + Typescript with StropheJS as a backend.</shortdesc>
+		<shortdesc xml:lang='en'>Fully-featured XMPP web client</shortdesc>
 
-    <homepage rdf:resource='https://github.com/haccn/xmpp-ftw'/>
+		<description xml:lang='en'>A lightweight yet fully-featued XMPP web client written in VueJS + Typescript with StropheJS as a backend.</shortdesc>
 
-    <!-- Core -->
-    <implements rdf:resource='https://xmpp.org/rfcs/rfc6120.html'/>
-    <implements rdf:resource='https://xmpp.org/rfcs/rfc7590.html'/>
+		<homepage rdf:resource='https://github.com/haccn/xmpp-ftw'/>
 
-    <!-- IM -->
-    <implements rdf:resource='https://xmpp.org/rfcs/rfc6121.html'/>
+		<!-- Core -->
+		<implements rdf:resource='https://xmpp.org/rfcs/rfc6120.html'/>
+		<implements rdf:resource='https://xmpp.org/rfcs/rfc7590.html'/>
 
-    <implements>
-      <xmpp:SupportedXep>
-        <xmpp:xep rdf:resource='https://xmpp.org/extensions/xep-0166.html'/>
-        <xmpp:status>planned</xmpp:status>
-        <xmpp:version>1.1.2<xmpp:version>
-      </xmpp:SupportedXep>
-    </implements>
-  </Project>
+		<!-- IM -->
+		<implements rdf:resource='https://xmpp.org/rfcs/rfc6121.html'/>
+
+		<implements>
+			<xmpp:SupportedXep>
+			<xmpp:xep rdf:resource='https://xmpp.org/extensions/xep-0166.html'/>
+			<xmpp:status>planned</xmpp:status>
+			<xmpp:version>1.1.2<xmpp:version>
+			</xmpp:SupportedXep>
+		</implements>
+
+	</Project>
 </rdf:RDF>
