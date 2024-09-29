@@ -1,19 +1,22 @@
 <script setup lang='ts'>
   import ThemeToggle from '@/components/ThemeToggle.vue'
+  import UserStrip from '@/components/UserStrip.vue';
   import router from '@/router'
   import { store } from '@/stores/main'
-  import { rosterGet, rosterSet } from '@/utils/roster'
+  import { approveSubscriptionRequest, cancelSubscription, requestSubscription } from '@/utils/presence';
+  import { rosterGet } from '@/utils/roster';
 
-  const connection = store.connection
+  let addContactJid = '';
+
+  // TODO: add UI for organizing groups and changing names
+  //rosterManager.rosterSet({ jid: addContactJid, name: '', groups: [] })
 
   function logout() {
-    connection.disconnect()
+    store.connection.disconnect()
     localStorage.removeItem('jid')
     localStorage.removeItem('seed')
     router.push({ name: 'login', query: { redirect: '/' }})
   }
-
-  let addContactJid = '';
 </script>
 
 <template>
@@ -24,13 +27,21 @@
     <h2>Contacts</h2>
     <button @click='rosterGet'>Refresh</button>
     <ul>
-      <li v-for='rosterItem in store.roster.values()'>
-        {{ rosterItem.jid }} <span style='opacity:0.5'>({{ rosterItem.subscription }})</span>
-        <button @click="() => { rosterItem.subscription = 'remove'; rosterSet(rosterItem) }">del</button>
+      <li v-for='subscriptionRequest in store.subscriptionRequests'>
+        ({{ subscriptionRequest }})
+        <button @click="() => approveSubscriptionRequest(subscriptionRequest)">apprv</button>
+        <button @click="() => cancelSubscription(subscriptionRequest)">rject</button>
+      </li>
+      <li v-for='[jid, contact] in store.contacts'>
+        <UserStrip
+          :jid="jid"
+          :name="contact.rosterItem.name"
+          :subscription="contact.rosterItem.subscription"
+          :presence="contact.presence" />
       </li>
     </ul>
     <input type="text" v-model="addContactJid"/>
-    <button @click="() => rosterSet({ jid: addContactJid, subscription: 'none' })">+</button>
+    <button @click="() => requestSubscription(addContactJid)">+</button>
     <!--
     <h2>Chats</h2>
     <ul>
@@ -43,12 +54,7 @@
   </main>
 </template>
 
-<style>
-body {
-  display: flex;
-  height: 100vh;
-  margin: 0;
-}
+<style scoped>
 ul {
   list-style: none;
   padding: 0;
@@ -58,12 +64,10 @@ li {
   padding: 0.3rem;
 }
 aside {
-  max-width: 10rem;
-  width: 100%;
-  background: #111;
-}
-aside * {
-  display: block;
+  width: 17rem;
+  background: var(--bg-2);
+  height: 100%;
+  position: fixed;
 }
 main {
   padding: 1rem;

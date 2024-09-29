@@ -1,10 +1,10 @@
-export function getIsLightTheme() {
-  return localStorage.getItem('isLightMode') === 'light' ??
-    window.matchMedia('(prefers-color-scheme: dark)')
+export function getIsDarkTheme() {
+  return localStorage.getItem('isDarkTheme') === 'dark' ??
+    window.matchMedia('(prefers-color-scheme: dark)').matches
 }
 
-export function setIsLightTheme(val: boolean) {
-  const valStr = val ? 'light' : ''
-  localStorage.setItem('isLightMode', valStr)
+export function setIsDarkTheme(val: boolean) {
+  const valStr = val ? 'dark' : ''
+  localStorage.setItem('isDarkTheme', valStr)
   document.documentElement.className = valStr
 }
