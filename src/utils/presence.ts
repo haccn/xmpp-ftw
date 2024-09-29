@@ -35,7 +35,7 @@ export function requestSubscription(to: string) {
   approveSubscriptionRequest(to)
 }
 
-// Section 3.1.4 Client Processing of Inbound Subscription Request
+// Section 3.1 Requesting a Subscription
 
 // NOTE: 'from' must be the **BARE** JID of the user who sent the request
 export function approveSubscriptionRequest(from: string) {
@@ -89,4 +89,38 @@ export function initPresenceListener() {
       }
     }
   }
+}
+
+// Section 3.2 Canceling a Subscription
+// i.e. remove their subscription to your presence
+
+export function cancelSubscription(jid: string) {
+  store.connection.sendPresence(
+    $pres({ to: jid, type: 'unsubscribed' }),
+    undefined,
+    (stanza: Element | null) => {
+      if (stanza) console.error('Error canceling subscription: ' + stanza.outerHTML)
+      else console.error('Error canceling subscription')
+    }
+  )
+}
+
+// Section 3.3 Unsubscribing
+// i.e. remove your subscription to their presence
+
+export function unsubscribe(jid: string) {
+  const existingRosterItem = store.roster.get(jid)
+  if (existingRosterItem === undefined || existingRosterItem.subscription === 'none') {
+    console.log(`You don't have a subscription to ${jid}`)
+    return
+  }
+
+  store.connection.sendPresence(
+    $pres({ to: jid, type: 'unsubscribe' }),
+    undefined,
+    (stanza: Element | null) => {
+      if (stanza) console.error('Error unsubscribing: ' + stanza.outerHTML)
+      else console.error('Error unsubscribing')
+    }
+  )
 }

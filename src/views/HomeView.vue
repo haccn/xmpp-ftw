@@ -2,7 +2,7 @@
   import ThemeToggle from '@/components/ThemeToggle.vue'
   import router from '@/router'
   import { store } from '@/stores/main'
-  import { approveSubscriptionRequest, requestSubscription } from '@/utils/presence';
+  import { approveSubscriptionRequest, cancelSubscription, requestSubscription } from '@/utils/presence';
   import { rosterGet, rosterSet, type RosterItem } from '@/utils/roster'
 
   let addContactJid = '';
@@ -34,6 +34,7 @@
       <li v-for='subscriptionRequest in store.subscriptionRequests'>
         ({{ subscriptionRequest }})
         <button @click="() => approveSubscriptionRequest(subscriptionRequest)">apprv</button>
+        <button @click="() => cancelSubscription(subscriptionRequest)">rject</button>
       </li>
       <li v-for='rosterItem in store.roster.values()'>
         {{ rosterItem.jid }} <span style='opacity:0.5'>({{ rosterItem.ask ? 'pending' : rosterItem.subscription }})</span>
